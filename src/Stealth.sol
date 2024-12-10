@@ -5,6 +5,10 @@ import "openzeppelin/token/ERC20/IERC20.sol";
 import "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 
 contract Stealth {
+    mapping(address => uint256) private _balances;
+    uint256 private _minFee;
+    address private _owner;
+
     /// @dev Event emitted when a user updates their registered stealth keys
     event StealthKeyChanged(
         bytes32 indexed registrant,
@@ -24,6 +28,10 @@ contract Stealth {
 
     mapping(bytes32 => address) public names;
     mapping(bytes32 => mapping(uint256 => uint256)) keys;
+
+    constructor(address owner) {
+        _owner = owner;
+    }
 
     function setStealthKeys(
         bytes32 _registrant,
