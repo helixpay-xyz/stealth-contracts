@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import "openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "openzeppelin/token/ERC20/IERC20.sol";
+import "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 
 contract Stealth {
     /// @dev Event emitted when a user updates their registered stealth keys
@@ -123,12 +124,7 @@ contract Stealth {
         bytes32 _pkx, // ephemeral public key x coordinate
         bytes32 _ciphertext
     ) external payable {
-        emit Announcement(_receiver, _amount, _tokenAddr, _pkx, _ciphertext);
-
-        if (_tokenAddr == address(0)) {
-            require(msg.value == _amount, "Stealth: Incorrect ETH amount");
-            payable(_receiver).transfer(_amount);
-        } else {
+        if (_tokenAddr != address(0)) {
             SafeERC20.safeTransferFrom(
                 IERC20(_tokenAddr),
                 msg.sender,
@@ -136,5 +132,8 @@ contract Stealth {
                 _amount
             );
         }
+
+        payable(_receiver).transfer(msg.value); // forward ETH
+        emit Announcement(_receiver, _amount, _tokenAddr, _pkx, _ciphertext);
     }
 }
