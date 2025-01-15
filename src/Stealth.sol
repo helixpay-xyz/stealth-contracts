@@ -22,6 +22,7 @@ contract Stealth is VICz {
     );
 
     mapping(bytes32 => address) public authorizes;
+    mapping(address => bytes32) public registrants;
     mapping(bytes32 => bytes) public keys;
 
     constructor(address owner) VICz(owner) {}
@@ -39,6 +40,7 @@ contract Stealth is VICz {
             );
         }
 
+        registrants[msg.sender] = _registrant;
         keys[_registrant] = _composeKey;
         emit StealthKeyChanged(_registrant, msg.sender, _composeKey);
     }
